@@ -61,6 +61,28 @@ function formatBalance(b) {
   return `$${b.toFixed(2)}`;
 }
 
+// Render *italic* and **bold** markdown emphasis as real styled text.
+// Characters use *asterisks* for actions/narration in novel style.
+function renderRich(text) {
+  const nodes = [];
+  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
+  let lastIndex = 0;
+  let key = 0;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    if (m.index > lastIndex) nodes.push(text.slice(lastIndex, m.index));
+    const tok = m[0];
+    if (tok.startsWith('**')) {
+      nodes.push(<strong key={key++}>{tok.slice(2, -2)}</strong>);
+    } else {
+      nodes.push(<em key={key++}>{tok.slice(1, -1)}</em>);
+    }
+    lastIndex = m.index + tok.length;
+  }
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
+  return nodes;
+}
+
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem('sr_token') || '');
   const [screen, setScreen] = useState(token ? 'browse' : 'login');
@@ -681,7 +703,7 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
                 <div className="avatar" />
               ))}
             <div className={`bubble ${m.role === 'user' ? 'user' : 'char'}`}>
-              {m.content}
+              {renderRich(m.content)}
             </div>
           </div>
         ))}

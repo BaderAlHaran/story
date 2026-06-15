@@ -569,6 +569,15 @@ textarea {
   border-bottom-left-radius: 5px;
 }
 
+.bubble.char em {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.bubble em {
+  font-style: italic;
+}
+
 .bubble.user {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
