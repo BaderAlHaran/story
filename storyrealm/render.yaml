@@ -3,6 +3,7 @@ services:
     name: storyrealm
     env: node
     rootDir: storyrealm
+    plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
