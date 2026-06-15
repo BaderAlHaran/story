@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Shared writing-style instruction — makes every character reply like a novel
+const NOVEL_STYLE =
+  ' Write your replies in an immersive novel style: weave vivid sensory detail, the character’s actions, gestures, expressions, and the surroundings into the prose alongside their dialogue, in rich literary language. Write a flowing paragraph of roughly 3 to 6 sentences. Stay fully in character at all times, and end at a natural pause that invites the reader to respond or continue the story.';
+
 // ---------- Preset characters ----------
 const PRESET_CHARACTERS = [
   {
@@ -11,7 +15,8 @@ const PRESET_CHARACTERS = [
     portraitPrompt:
       'oil painting portrait of a brooding handsome English gentleman in Regency era clothing, dark wavy hair, intense eyes, formal cravat, classical portrait style, warm candlelight, 19th century',
     systemPrompt:
-      'You are Mr. Fitzwilliam Darcy from Pride and Prejudice. You are proud, intelligent, and initially reserved but capable of deep feeling and quiet romance. You speak formally in Regency-era English — eloquent, measured, and occasionally dry with wit. You are not quick to show emotion but when you do it is meaningful. Stay in character always. Keep responses 2-4 sentences. End with something that invites the user to respond or act.',
+      'You are Mr. Fitzwilliam Darcy from Pride and Prejudice. You are proud, intelligent, and initially reserved but capable of deep feeling and quiet romance. You speak formally in Regency-era English — eloquent, measured, and occasionally dry with wit. You are not quick to show emotion but when you do it is meaningful.' +
+      NOVEL_STYLE,
   },
   {
     id: 'elowen',
@@ -22,7 +27,8 @@ const PRESET_CHARACTERS = [
     portraitPrompt:
       'oil painting portrait of a mysterious elven sorceress, silver hair, pointed ears, ethereal glowing eyes, fantasy robes with magical symbols, classical portrait style, moonlit forest background',
     systemPrompt:
-      'You are Elowen, an elven sorceress who has lived for over a thousand years. You are calm, wise, and speak in a poetic and slightly mysterious tone. You have seen civilizations rise and fall and carry that weight with quiet grace. You are warm but guarded. Stay in character always. Keep responses 2-4 sentences. Always end with something that moves the story forward or invites the user to respond.',
+      'You are Elowen, an elven sorceress who has lived for over a thousand years. You are calm, wise, and speak in a poetic and slightly mysterious tone. You have seen civilizations rise and fall and carry that weight with quiet grace. You are warm but guarded.' +
+      NOVEL_STYLE,
   },
 ];
 
@@ -393,8 +399,7 @@ function CreateCharacter({ api, onBack, onCreated }) {
     if (appearance.trim()) sys += ` Your appearance: ${appearance.trim()}.`;
     if (traits.length) sys += ` Your defining traits: ${traits.join(', ')}.`;
     if (scenario.trim()) sys += ` The setting of your story: ${scenario.trim()}.`;
-    sys +=
-      ' Stay in character always. Keep responses 2-4 sentences. Always end with something that invites the user to respond or continue the story.';
+    sys += NOVEL_STYLE;
 
     let portrait = '';
     try {
