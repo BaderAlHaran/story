@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: storyrealm
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLAUDE_API_KEY
+        sync: false
+      - key: APP_USERNAME
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: HF_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
