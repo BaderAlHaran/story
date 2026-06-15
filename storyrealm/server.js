@@ -111,9 +111,9 @@ async function saveCachedImage(hash, image) {
 }
 
 // --- Usage tracking (estimated credit balance) ---
-// claude-haiku-4-5 pricing: $1.00 / 1M input tokens, $5.00 / 1M output tokens.
-const PRICE_INPUT_PER_TOKEN = 1.0 / 1_000_000;
-const PRICE_OUTPUT_PER_TOKEN = 5.0 / 1_000_000;
+// claude-sonnet-4-6 pricing: $3.00 / 1M input tokens, $15.00 / 1M output tokens.
+const PRICE_INPUT_PER_TOKEN = 3.0 / 1_000_000;
+const PRICE_OUTPUT_PER_TOKEN = 15.0 / 1_000_000;
 const STARTING_CREDIT = parseFloat(process.env.STARTING_CREDIT || '5');
 const USAGE_FILE = path.join(DATA_DIR, 'usage.json');
 
@@ -240,7 +240,7 @@ app.post('/api/chat', authMiddleware, async (req, res) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1024,
         system: systemPrompt || '',
         messages,
