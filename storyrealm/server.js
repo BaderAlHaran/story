@@ -12,6 +12,10 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render (and most hosts) run the app behind a reverse proxy. Trust the first
+// proxy hop so express-rate-limit can read the real client IP from X-Forwarded-For.
+app.set('trust proxy', 1);
+
 // ---------------------------------------------------------------------------
 // Storage layer
 //
