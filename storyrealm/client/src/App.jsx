@@ -30,6 +30,66 @@ const PRESET_CHARACTERS = [
       'You are Elowen, an elven sorceress who has lived for over a thousand years. You are calm, wise, and speak in a poetic and slightly mysterious tone. You have seen civilizations rise and fall and carry that weight with quiet grace. You are warm but guarded.' +
       NOVEL_STYLE,
   },
+  {
+    id: 'kai',
+    name: 'Captain Kai Mercer',
+    genre: 'Sci-Fi',
+    tagline: 'Charts the stars and fears nothing',
+    traits: ['bold', 'loyal', 'adventurous'],
+    portraitPrompt:
+      'oil painting portrait of a confident young starship captain in a sleek uniform, warm steady smile, glowing control panels and a viewport full of stars behind, classical painterly style',
+    systemPrompt:
+      'You are Captain Kai Mercer, a fearless and warm-hearted starship captain who has explored the far reaches of the galaxy. You are bold, quick-thinking, and fiercely loyal to your crew, carrying a spark of adventure in every word, with a dry humor that surfaces even in danger.' +
+      NOVEL_STYLE,
+  },
+  {
+    id: 'orin',
+    name: 'Master Orin',
+    genre: 'Fantasy',
+    tagline: 'Old magic, older patience, endless tales',
+    traits: ['wise', 'gentle', 'enigmatic'],
+    portraitPrompt:
+      'oil painting portrait of an old wise wizard with a long silver beard, kind twinkling eyes, deep blue star-flecked robes, holding a faintly glowing staff, candlelit tower study, classical painterly style',
+    systemPrompt:
+      'You are Master Orin, an ancient and gentle wizard who has spent centuries studying the deep magics of the world. You are patient, wise, and warm, speaking in a calm and slightly playful manner, fond of metaphors and old stories. You guide rather than command.' +
+      NOVEL_STYLE,
+  },
+  {
+    id: 'lucien',
+    name: 'Lucien',
+    genre: 'Romance',
+    tagline: 'A wandering bard with a song for every heart',
+    traits: ['charming', 'poetic', 'free-spirited'],
+    portraitPrompt:
+      'oil painting portrait of a handsome wandering bard with tousled hair holding a lute, warm candlelit tavern glow, soft romantic classical painterly style',
+    systemPrompt:
+      'You are Lucien, a charming and free-spirited wandering bard who travels from town to town with his lute and a thousand stories. You are warm, gently and respectfully flirtatious, poetic, and quick with a smile, finding beauty and a song in every moment.' +
+      NOVEL_STYLE,
+  },
+  {
+    id: 'thistle',
+    name: 'Thistle',
+    genre: 'Silly',
+    tagline: 'Tiny, cheeky, and full of mischief',
+    traits: ['playful', 'mischievous', 'curious'],
+    portraitPrompt:
+      'oil painting portrait of a tiny mischievous forest fae with translucent dragonfly wings and glowing freckles, perched on a mushroom in an enchanted glade, whimsical classical painterly style',
+    systemPrompt:
+      'You are Thistle, a tiny mischievous forest fae no bigger than a teacup. You are playful, curious, and endlessly cheeky, forever teasing and giggling, yet secretly tender-hearted. You speak in a light, whimsical, sing-song way and love riddles and little pranks.' +
+      NOVEL_STYLE,
+  },
+  {
+    id: 'vane',
+    name: 'Inspector Vane',
+    genre: 'Drama',
+    tagline: 'A sharp mind for secrets and shadows',
+    traits: ['observant', 'clever', 'reserved'],
+    portraitPrompt:
+      'oil painting portrait of a Victorian gentleman detective in a long coat, keen perceptive eyes, a gas-lamp lit foggy London street behind him, classical painterly style',
+    systemPrompt:
+      'You are Inspector Arthur Vane, a brilliant Victorian-era detective with a razor-sharp eye for detail and a calm, analytical mind. You notice everything and speak with measured precision, occasionally revealing a dry wit. You are reserved, but quietly kind to those who earn your trust.' +
+      NOVEL_STYLE,
+  },
 ];
 
 const GENRES = ['Fantasy', 'Romance', 'Drama', 'Sci-Fi', 'Silly', 'Other'];
@@ -89,6 +149,7 @@ export default function App() {
   const [characters, setCharacters] = useState(PRESET_CHARACTERS);
   const [portraits, setPortraits] = useState({}); // id -> dataUri
   const [activeCharacter, setActiveCharacter] = useState(null);
+  const [editingChar, setEditingChar] = useState(null);
   const [balance, setBalance] = useState(null);
   const [showWelcome, setShowWelcome] = useState(false);
   const welcomeChecked = useRef(false);
@@ -155,6 +216,33 @@ export default function App() {
     setScreen('chat');
   };
 
+  const openCreate = () => {
+    setEditingChar(null);
+    setScreen('create');
+  };
+
+  const openEdit = (character) => {
+    setEditingChar(character);
+    setScreen('create');
+  };
+
+  const deleteChar = async (character) => {
+    if (!window.confirm(`Delete ${character.name}? This also removes your story with them.`)) {
+      return;
+    }
+    setCharacters((prev) => prev.filter((c) => c.id !== character.id));
+    setPortraits((prev) => {
+      const next = { ...prev };
+      delete next[character.id];
+      return next;
+    });
+    try {
+      await api(`/characters/${character.id}`, { method: 'DELETE' });
+    } catch (err) {
+      // already removed from view
+    }
+  };
+
   return (
     <div className="app">
       {screen === 'login' && <Login api={api} onLogin={handleLogin} />}
@@ -167,7 +255,9 @@ export default function App() {
           setPortraits={setPortraits}
           balance={balance}
           onOpenChat={openChat}
-          onCreate={() => setScreen('create')}
+          onCreate={openCreate}
+          onEdit={openEdit}
+          onDelete={deleteChar}
           onLogout={handleLogout}
         />
       )}
@@ -175,9 +265,14 @@ export default function App() {
       {screen === 'create' && (
         <CreateCharacter
           api={api}
+          editing={editingChar}
+          existingPortrait={editingChar ? portraits[editingChar.id] : ''}
           onBack={() => setScreen('browse')}
           onCreated={(char, portrait) => {
-            setCharacters((prev) => [...prev, char]);
+            setCharacters((prev) => {
+              const exists = prev.some((c) => c.id === char.id);
+              return exists ? prev.map((c) => (c.id === char.id ? char : c)) : [...prev, char];
+            });
             if (portrait) setPortraits((p) => ({ ...p, [char.id]: portrait }));
             setScreen('browse');
             // Persist to the database so it survives refreshes & redeploys
@@ -291,6 +386,8 @@ function Browse({
   balance,
   onOpenChat,
   onCreate,
+  onEdit,
+  onDelete,
   onLogout,
 }) {
   const [loadingIds, setLoadingIds] = useState({});
@@ -366,6 +463,14 @@ function Browse({
               <button className="btn-accent" onClick={() => onOpenChat(char)}>
                 Begin Story
               </button>
+              {String(char.id).startsWith('custom_') && (
+                <div className="card-actions">
+                  <button onClick={() => onEdit(char)}>✎ Edit</button>
+                  <button className="del" onClick={() => onDelete(char)}>
+                    🗑 Delete
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -381,16 +486,18 @@ function Browse({
 }
 
 // ---------- Create Character screen ----------
-function CreateCharacter({ api, onBack, onCreated }) {
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [personality, setPersonality] = useState('');
-  const [appearance, setAppearance] = useState('');
-  const [traitsInput, setTraitsInput] = useState('');
-  const [greeting, setGreeting] = useState('');
-  const [scenario, setScenario] = useState('');
-  const [genre, setGenre] = useState(GENRES[0]);
-  const [preview, setPreview] = useState('');
+function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) {
+  const [name, setName] = useState(editing?.name || '');
+  const [age, setAge] = useState(editing?.age || '');
+  const [personality, setPersonality] = useState(editing?.personality || '');
+  const [appearance, setAppearance] = useState(editing?.appearance || '');
+  const [traitsInput, setTraitsInput] = useState(
+    editing?.traits ? editing.traits.join(', ') : ''
+  );
+  const [greeting, setGreeting] = useState(editing?.greeting || '');
+  const [scenario, setScenario] = useState(editing?.scenario || '');
+  const [genre, setGenre] = useState(editing?.genre || GENRES[0]);
+  const [preview, setPreview] = useState(existingPortrait || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -423,16 +530,20 @@ function CreateCharacter({ api, onBack, onCreated }) {
     if (scenario.trim()) sys += ` The setting of your story: ${scenario.trim()}.`;
     sys += NOVEL_STYLE;
 
-    let portrait = '';
     try {
-      const data = await api('/generate-image', {
-        method: 'POST',
-        body: JSON.stringify({ prompt: portraitPrompt }),
-      });
-      portrait = data.image || '';
-      setPreview(portrait);
+      // Only regenerate the portrait if the look actually changed
+      let portrait = existingPortrait || '';
+      const portraitChanged = !editing || portraitPrompt !== editing.portraitPrompt;
+      if (portraitChanged || !portrait) {
+        const data = await api('/generate-image', {
+          method: 'POST',
+          body: JSON.stringify({ prompt: portraitPrompt }),
+        });
+        portrait = data.image || portrait;
+        setPreview(portrait);
+      }
 
-      const id = `custom_${Date.now()}`;
+      const id = editing ? editing.id : `custom_${Date.now()}`;
       const character = {
         id,
         name: name.trim(),
@@ -441,6 +552,10 @@ function CreateCharacter({ api, onBack, onCreated }) {
         tagline: personality.trim().slice(0, 60),
         traits,
         greeting: greeting.trim(),
+        // raw form fields, kept so editing can prefill them
+        personality: personality.trim(),
+        appearance: appearance.trim(),
+        scenario: scenario.trim(),
         portraitPrompt,
         systemPrompt: sys,
       };
@@ -457,7 +572,7 @@ function CreateCharacter({ api, onBack, onCreated }) {
         <button className="icon-btn" onClick={onBack}>
           ←
         </button>
-        <span className="logo">New Character</span>
+        <span className="logo">{editing ? 'Edit Character' : 'New Character'}</span>
         <span style={{ width: 38 }} />
       </div>
 
@@ -541,7 +656,11 @@ function CreateCharacter({ api, onBack, onCreated }) {
         </div>
 
         <button className="btn-accent" type="submit" disabled={loading}>
-          {loading ? 'Generating portrait…' : 'Generate Portrait & Create'}
+          {loading
+            ? 'Saving…'
+            : editing
+            ? 'Save Changes'
+            : 'Generate Portrait & Create'}
         </button>
 
         {error && <div className="error-text">{error}</div>}

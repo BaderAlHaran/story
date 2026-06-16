@@ -426,6 +426,32 @@ textarea {
   margin-top: 4px;
 }
 
+.card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.card-actions button {
+  flex: 1;
+  font-size: 11px;
+  padding: 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #2e2742;
+  color: var(--muted);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.card-actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.card-actions button.del:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
 /* ---------- Create Character ---------- */
 .form-screen {
   padding: 8px 18px 32px;
