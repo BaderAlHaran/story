@@ -683,6 +683,29 @@ textarea {
   text-align: center;
 }
 
+.regen-row {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 2px;
+}
+
+.regen-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid #2e2742;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.regen-btn:hover {
+  color: var(--accent);
+  background: rgba(176, 110, 243, 0.12);
+}
+
 .composer {
   position: relative;
   z-index: 2;

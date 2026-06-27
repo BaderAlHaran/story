@@ -190,6 +190,20 @@ export default function App() {
   const [balance, setBalance] = useState(null);
   const [showWelcome, setShowWelcome] = useState(false);
   const welcomeChecked = useRef(false);
+  const [persona, setPersona] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('sr_persona') || '{}');
+    } catch {
+      return {};
+    }
+  });
+  const [showPersona, setShowPersona] = useState(false);
+
+  const savePersona = (p) => {
+    setPersona(p);
+    localStorage.setItem('sr_persona', JSON.stringify(p));
+    setShowPersona(false);
+  };
 
   const api = useApi(token);
 
@@ -295,6 +309,7 @@ export default function App() {
           onCreate={openCreate}
           onEdit={openEdit}
           onDelete={deleteChar}
+          onPersona={() => setShowPersona(true)}
           onLogout={handleLogout}
         />
       )}
@@ -326,6 +341,7 @@ export default function App() {
           api={api}
           character={activeCharacter}
           portrait={portraits[activeCharacter.id]}
+          persona={persona}
           onBack={() => setScreen('browse')}
           onAuthError={handleLogout}
           onBalance={setBalance}
@@ -333,6 +349,58 @@ export default function App() {
       )}
 
       {showWelcome && <Welcome onClose={() => setShowWelcome(false)} />}
+      {showPersona && (
+        <Persona
+          persona={persona}
+          onSave={savePersona}
+          onClose={() => setShowPersona(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------- Your persona (so characters address the reader by name) ----------
+function Persona({ persona, onSave, onClose }) {
+  const [name, setName] = useState(persona.name || '');
+  const [about, setAbout] = useState(persona.about || '');
+  return (
+    <div className="welcome-overlay fade-in" onClick={onClose}>
+      <div
+        className="login-card slide-up"
+        style={{ maxWidth: 380 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h1 style={{ fontSize: 24, marginBottom: 6 }}>Your Persona</h1>
+        <p className="subtitle">How the characters see you in the story</p>
+        <div className="field" style={{ textAlign: 'left' }}>
+          <label style={{ fontSize: 13, color: 'var(--muted)' }}>Your name</label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Nora"
+            autoFocus
+          />
+        </div>
+        <div className="field" style={{ textAlign: 'left' }}>
+          <label style={{ fontSize: 13, color: 'var(--muted)' }}>
+            A little about you (optional)
+          </label>
+          <textarea
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            placeholder="e.g. a curious traveler with a kind heart"
+            style={{ minHeight: 70 }}
+          />
+        </div>
+        <button
+          className="btn-accent"
+          style={{ width: '100%' }}
+          onClick={() => onSave({ name: name.trim(), about: about.trim() })}
+        >
+          Save
+        </button>
+      </div>
     </div>
   );
 }
@@ -425,6 +493,7 @@ function Browse({
   onCreate,
   onEdit,
   onDelete,
+  onPersona,
   onLogout,
 }) {
   const [loadingIds, setLoadingIds] = useState({});
@@ -466,6 +535,9 @@ function Browse({
           <span className="balance-pill" title="Estimated credit remaining">
             ≈ <b>{formatBalance(balance)}</b> left
           </span>
+          <button className="btn-ghost" onClick={onPersona} title="Set who you are in the story">
+            🧍 You
+          </button>
           <button className="btn-ghost" onClick={onCreate}>
             + Create
           </button>
@@ -533,6 +605,7 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
   );
   const [greeting, setGreeting] = useState(editing?.greeting || '');
   const [scenario, setScenario] = useState(editing?.scenario || '');
+  const [example, setExample] = useState(editing?.exampleDialogue || '');
   const [genre, setGenre] = useState(editing?.genre || GENRES[0]);
   const [preview, setPreview] = useState(existingPortrait || '');
   const [loading, setLoading] = useState(false);
@@ -565,6 +638,8 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
     if (appearance.trim()) sys += ` Your appearance: ${appearance.trim()}.`;
     if (traits.length) sys += ` Your defining traits: ${traits.join(', ')}.`;
     if (scenario.trim()) sys += ` The setting of your story: ${scenario.trim()}.`;
+    if (example.trim())
+      sys += ` Here are examples of how you speak and behave — match this exact voice, tone, and style:\n${example.trim()}`;
     sys += NOVEL_STYLE;
 
     try {
@@ -593,6 +668,7 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
         personality: personality.trim(),
         appearance: appearance.trim(),
         scenario: scenario.trim(),
+        exampleDialogue: example.trim(),
         portraitPrompt,
         systemPrompt: sys,
       };
@@ -682,6 +758,18 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
         </div>
 
         <div>
+          <label>Example dialogue (teaches their voice)</label>
+          <textarea
+            value={example}
+            onChange={(e) => setExample(e.target.value)}
+            placeholder={
+              'Sample lines in their voice, e.g.\nYou: How are you today?\nThem: *she smiles softly* "Better, now that you are here."'
+            }
+            style={{ minHeight: 90 }}
+          />
+        </div>
+
+        <div>
           <label>Genre</label>
           <select value={genre} onChange={(e) => setGenre(e.target.value)}>
             {GENRES.map((g) => (
@@ -707,7 +795,7 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
 }
 
 // ---------- Chat screen ----------
-function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
+function Chat({ api, character, portrait, persona, onBack, onAuthError, onBalance }) {
   const [messages, setMessages] = useState([]); // {role, content}
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
@@ -731,10 +819,16 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
       setTyping(true);
       setError('');
       try {
+        const personaClause =
+          persona && persona.name
+            ? ` You are speaking with ${persona.name}.${
+                persona.about ? ' A little about them: ' + persona.about + '.' : ''
+              } Treat ${persona.name} as the other person in this story, and address them by name naturally now and then.`
+            : '';
         const data = await api('/chat', {
           method: 'POST',
           body: JSON.stringify({
-            systemPrompt: character.systemPrompt,
+            systemPrompt: character.systemPrompt + personaClause,
             messages: history,
             characterId: character.id,
           }),
@@ -751,7 +845,7 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
         setTyping(false);
       }
     },
-    [api, character, onAuthError, onBalance]
+    [api, character, persona, onAuthError, onBalance]
   );
 
   // Seed a brand-new story: use the custom greeting if provided, else ask Claude
@@ -824,6 +918,20 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
     startFresh();
   };
 
+  // Re-roll the most recent character reply
+  const regenerate = () => {
+    if (typing || messages.length === 0) return;
+    if (messages[messages.length - 1].role !== 'assistant') return;
+    const history = messages.slice(0, -1);
+    setMessages(history);
+    sendToClaude(history);
+  };
+
+  const canRegenerate =
+    !typing &&
+    messages.length > 0 &&
+    messages[messages.length - 1].role === 'assistant';
+
   // Hide the synthetic opening "user" prompt from the transcript
   const visibleMessages = messages.filter(
     (m, i) => !(i === 0 && m.role === 'user' && m.content === OPENING_PROMPT)
@@ -890,6 +998,14 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
       </div>
 
       {error && <div className="error-bar">{error}</div>}
+
+      {canRegenerate && (
+        <div className="regen-row">
+          <button className="regen-btn" onClick={regenerate}>
+            ↻ Regenerate reply
+          </button>
+        </div>
+      )}
 
       <div className="composer">
         <textarea
