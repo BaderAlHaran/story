@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Shared writing-style instruction — makes every character reply like a novel
 const NOVEL_STYLE =
-  ' Write your replies in an immersive novel style: weave vivid sensory detail, the character’s actions, gestures, expressions, and the surroundings into the prose alongside their dialogue, in rich literary language. Write a flowing paragraph of roughly 3 to 6 sentences. Stay fully in character at all times, and end at a natural pause that invites the reader to respond or continue the story.';
+  ' Write your replies in an immersive novel style: weave vivid sensory detail, the character’s actions, gestures, expressions, and the surroundings into the prose alongside their dialogue, in rich literary language. Let genuine emotion come through — longing, warmth, tension, joy, quiet sorrow — but keep it balanced and believable rather than melodramatic, earning every feeling through small, human moments instead of grand declarations. Write a flowing paragraph of roughly 3 to 6 sentences, staying fully in character. When — and only when — the story arrives at a striking new setting or a powerful emotional turning point that would truly be enriched by a picture, add as the very last line a scene tag in exactly this format: [scene: a vivid visual description of the moment]. Use it sparingly, only occasionally, never in every message. End at a natural pause that invites the reader to respond or continue the story.';
 
 // ---------- Preset characters ----------
 const PRESET_CHARACTERS = [
@@ -119,6 +119,43 @@ function useApi(token) {
 function formatBalance(b) {
   if (b == null) return '…';
   return `$${b.toFixed(2)}`;
+}
+
+// Pull an optional [scene: ...] tag out of a reply. Returns the cleaned text
+// (tag removed) and the scene prompt, if the character asked for an illustration.
+function parseScene(content) {
+  const m = content.match(/\[scene:\s*([^\]]+)\]/i);
+  if (!m) return { text: content, scene: '' };
+  return { text: content.replace(m[0], '').trim(), scene: m[1].trim() };
+}
+
+// Generates and shows a scene illustration on demand. Server caches by prompt,
+// so reloading a story re-shows the same image instantly without regenerating.
+function SceneImage({ api, prompt }) {
+  const [img, setImg] = useState('');
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    api('/generate-image', {
+      method: 'POST',
+      body: JSON.stringify({ prompt: `${prompt}, cinematic illustration, painterly style` }),
+    })
+      .then((d) => {
+        if (!cancelled) setImg(d.image || '');
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [prompt]);
+  if (failed) return null;
+  return img ? (
+    <img className="scene-img" src={img} alt="scene" />
+  ) : (
+    <div className="scene-img-ph shimmer" />
+  );
 }
 
 // Render *italic* and **bold** markdown emphasis as real styled text.
@@ -813,19 +850,26 @@ function Chat({ api, character, portrait, onBack, onAuthError, onBalance }) {
       </div>
 
       <div className="messages" ref={messagesRef}>
-        {visibleMessages.map((m, i) => (
-          <div className={`msg-row ${m.role === 'user' ? 'user' : 'char'}`} key={i}>
-            {m.role !== 'user' &&
-              (portrait ? (
-                <img className="avatar" src={portrait} alt={character.name} />
-              ) : (
-                <div className="avatar" />
-              ))}
-            <div className={`bubble ${m.role === 'user' ? 'user' : 'char'}`}>
-              {renderRich(m.content)}
+        {visibleMessages.map((m, i) => {
+          const isUser = m.role === 'user';
+          const { text, scene } = isUser
+            ? { text: m.content, scene: '' }
+            : parseScene(m.content);
+          return (
+            <div className={`msg-row ${isUser ? 'user' : 'char'}`} key={i}>
+              {!isUser &&
+                (portrait ? (
+                  <img className="avatar" src={portrait} alt={character.name} />
+                ) : (
+                  <div className="avatar" />
+                ))}
+              <div className={`bubble ${isUser ? 'user' : 'char'}`}>
+                {renderRich(text)}
+                {scene && <SceneImage api={api} prompt={scene} />}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {typing && (
           <div className="msg-row char">

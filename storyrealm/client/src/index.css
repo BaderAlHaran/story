@@ -618,6 +618,24 @@ textarea {
   border-bottom-right-radius: 5px;
 }
 
+.scene-img {
+  width: 100%;
+  border-radius: 14px;
+  margin-top: 10px;
+  display: block;
+  border: 1px solid #2e2742;
+}
+
+.scene-img-ph {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  margin-top: 10px;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
 /* Typing indicator */
 .typing {
   display: flex;
