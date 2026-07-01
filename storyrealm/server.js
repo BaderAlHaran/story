@@ -327,8 +327,12 @@ app.delete('/api/history/:characterId', authMiddleware, async (req, res) => {
 // --- POST /api/generate-image ---
 // Uses Pollinations.ai — free, no API key, no monthly credit limit, FLUX-based HD.
 // Accepts an optional `wide` flag for 16:10 scene images vs 3:4 portraits.
-const IMAGE_STYLE =
+// Portraits focus on the character; scenes are pure environment/establishing
+// shots (no people — avoids tiny distorted figures in wide location images).
+const STYLE_PORTRAIT =
   'anime style, highly detailed, cinematic lighting, sharp focus, masterpiece, ultra detailed, high resolution';
+const STYLE_SCENE =
+  'anime background art, detailed environment concept art, cinematic establishing shot, scenery, atmospheric lighting, no people, no characters, highly detailed, masterpiece, ultra detailed, high resolution';
 
 app.post('/api/generate-image', authMiddleware, async (req, res) => {
   const { prompt, wide } = req.body || {};
@@ -337,7 +341,7 @@ app.post('/api/generate-image', authMiddleware, async (req, res) => {
   // Cache key includes style + shape so a style change regenerates cleanly
   const width = wide ? 1216 : 896;
   const height = wide ? 768 : 1152;
-  const fullPrompt = `${prompt}, ${IMAGE_STYLE}`;
+  const fullPrompt = `${prompt}, ${wide ? STYLE_SCENE : STYLE_PORTRAIT}`;
   const hash = crypto
     .createHash('md5')
     .update(`${fullPrompt}|${width}x${height}`)
