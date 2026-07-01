@@ -348,14 +348,29 @@ app.post('/api/generate-image', authMiddleware, async (req, res) => {
 
   try {
     const enc = encodeURIComponent(fullPrompt);
-    const url = `https://image.pollinations.ai/prompt/${enc}?width=${width}&height=${height}&nologo=true&model=flux`;
+    const tokenParam = process.env.POLLINATIONS_TOKEN
+      ? `&token=${process.env.POLLINATIONS_TOKEN}`
+      : '';
+    const url = `https://image.pollinations.ai/prompt/${enc}?width=${width}&height=${height}&nologo=true&model=flux${tokenParam}`;
 
-    const response = await fetch(url);
+    // Pollinations rate-limits by IP; retry a few times on 429 with backoff.
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    let response;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      response = await fetch(url);
+      if (response.ok) break;
+      if (response.status === 429 && attempt < 4) {
+        await sleep(3000 * (attempt + 1));
+        continue;
+      }
+      break;
+    }
+
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
       return res
         .status(response.status)
-        .json({ error: `Image generation failed: ${errText}` });
+        .json({ error: `Image generation failed (${response.status}): ${errText}` });
     }
 
     const arrayBuffer = await response.arrayBuffer();

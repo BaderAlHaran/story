@@ -21,3 +21,5 @@ services:
         sync: false
       - key: MONGODB_URI
         sync: false
+      - key: POLLINATIONS_TOKEN
+        sync: false
