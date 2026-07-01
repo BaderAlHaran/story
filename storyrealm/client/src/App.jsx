@@ -380,6 +380,11 @@ export default function App() {
     setScreen('chat');
   };
 
+  const openDetail = (character) => {
+    setActiveCharacter(character);
+    setScreen('detail');
+  };
+
   const openCreate = () => {
     setEditingChar(null);
     setScreen('create');
@@ -418,12 +423,26 @@ export default function App() {
           portraits={portraits}
           setPortraits={setPortraits}
           balance={balance}
-          onOpenChat={openChat}
+          onOpenDetail={openDetail}
           onCreate={openCreate}
           onEdit={openEdit}
           onDelete={deleteChar}
           onPersona={() => setShowPersona(true)}
           onLogout={handleLogout}
+        />
+      )}
+
+      {screen === 'detail' && activeCharacter && (
+        <Detail
+          character={activeCharacter}
+          portrait={portraits[activeCharacter.id]}
+          onChat={() => setScreen('chat')}
+          onBack={() => setScreen('browse')}
+          onEdit={() => openEdit(activeCharacter)}
+          onDelete={async () => {
+            await deleteChar(activeCharacter);
+            setScreen('browse');
+          }}
         />
       )}
 
@@ -602,7 +621,7 @@ function Browse({
   portraits,
   setPortraits,
   balance,
-  onOpenChat,
+  onOpenDetail,
   onCreate,
   onEdit,
   onDelete,
@@ -662,9 +681,19 @@ function Browse({
         {characters.map((char) => (
           <div className="char-card slide-up" key={char.id}>
             {portraits[char.id] ? (
-              <img className="portrait" src={portraits[char.id]} alt={char.name} />
+              <img
+                className="portrait"
+                src={portraits[char.id]}
+                alt={char.name}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onOpenDetail(char)}
+              />
             ) : (
-              <div className={`portrait-ph ${loadingIds[char.id] ? 'shimmer' : ''}`} />
+              <div
+                className={`portrait-ph ${loadingIds[char.id] ? 'shimmer' : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onOpenDetail(char)}
+              />
             )}
             <div className="card-body">
               <span className="char-name">
@@ -682,17 +711,9 @@ function Browse({
                   ))}
                 </div>
               )}
-              <button className="btn-accent" onClick={() => onOpenChat(char)}>
-                Begin Story
+              <button className="btn-accent" onClick={() => onOpenDetail(char)}>
+                View →
               </button>
-              {String(char.id).startsWith('custom_') && (
-                <div className="card-actions">
-                  <button onClick={() => onEdit(char)}>✎ Edit</button>
-                  <button className="del" onClick={() => onDelete(char)}>
-                    🗑 Delete
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         ))}
@@ -702,6 +723,84 @@ function Browse({
         <button className="btn-ghost" onClick={onLogout}>
           Log out
         </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Character detail / card screen ----------
+function Detail({ character, portrait, onChat, onBack, onEdit, onDelete }) {
+  const isCustom = String(character.id).startsWith('custom_');
+  // Derive a readable "about" from the system prompt (minus the shared style rules)
+  const about = character.systemPrompt
+    ? character.systemPrompt.replace(NOVEL_STYLE, '').trim()
+    : '';
+
+  return (
+    <div className="fade-in">
+      <div className="topbar">
+        <button className="icon-btn" onClick={onBack}>
+          ←
+        </button>
+        <span className="logo">{character.name}</span>
+        <span style={{ width: 38 }} />
+      </div>
+
+      <div className="detail-body slide-up">
+        {portrait ? (
+          <img className="detail-portrait" src={portrait} alt={character.name} />
+        ) : (
+          <div className="detail-portrait portrait-ph shimmer" />
+        )}
+
+        <div className="detail-head">
+          <span className="char-name" style={{ fontSize: 26 }}>
+            {character.name}
+            {character.age ? (
+              <span style={{ color: 'var(--muted)', fontSize: 15 }}> · {character.age}</span>
+            ) : null}
+          </span>
+          <span className="genre-tag">{character.genre}</span>
+        </div>
+
+        <p className="detail-tagline">{character.tagline}</p>
+
+        {character.traits && character.traits.length > 0 && (
+          <div className="traits">
+            {character.traits.map((t) => (
+              <span className="trait-chip" key={t}>
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {about && (
+          <div className="detail-section">
+            <h3>About</h3>
+            <p>{about}</p>
+          </div>
+        )}
+
+        {character.greeting && (
+          <div className="detail-section">
+            <h3>Intro</h3>
+            <p className="detail-greeting">{renderRich(character.greeting)}</p>
+          </div>
+        )}
+
+        <button className="btn-accent" style={{ width: '100%', marginTop: 6 }} onClick={onChat}>
+          Begin Story ✨
+        </button>
+
+        {isCustom && (
+          <div className="card-actions" style={{ marginTop: 10 }}>
+            <button onClick={onEdit}>✎ Edit</button>
+            <button className="del" onClick={onDelete}>
+              🗑 Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
