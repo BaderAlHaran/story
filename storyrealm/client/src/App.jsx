@@ -236,6 +236,7 @@ function SceneImage({ api, prompt }) {
       method: 'POST',
       body: JSON.stringify({
         prompt: `${prompt}, anime manga style, detailed digital illustration, dramatic cinematic lighting`,
+        wide: true,
       }),
     })
       .then((d) => {

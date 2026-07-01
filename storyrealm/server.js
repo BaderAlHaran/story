@@ -325,31 +325,37 @@ app.delete('/api/history/:characterId', authMiddleware, async (req, res) => {
 });
 
 // --- POST /api/generate-image ---
+// Uses Pollinations.ai — free, no API key, no monthly credit limit, FLUX-based HD.
+// Accepts an optional `wide` flag for 16:10 scene images vs 3:4 portraits.
+const IMAGE_STYLE =
+  'anime style, highly detailed, cinematic lighting, sharp focus, masterpiece, ultra detailed, high resolution';
+
 app.post('/api/generate-image', authMiddleware, async (req, res) => {
-  const { prompt } = req.body || {};
+  const { prompt, wide } = req.body || {};
   if (!prompt) return res.status(400).json({ error: 'prompt is required' });
 
-  const hash = crypto.createHash('md5').update(prompt).digest('hex');
+  // Cache key includes style + shape so a style change regenerates cleanly
+  const width = wide ? 1216 : 896;
+  const height = wide ? 768 : 1152;
+  const fullPrompt = `${prompt}, ${IMAGE_STYLE}`;
+  const hash = crypto
+    .createHash('md5')
+    .update(`${fullPrompt}|${width}x${height}`)
+    .digest('hex');
 
   const cached = await getCachedImage(hash);
   if (cached) return res.json({ image: cached, cached: true });
 
   try {
-    const response = await fetch(
-      'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ inputs: prompt }),
-      }
-    );
+    const enc = encodeURIComponent(fullPrompt);
+    const url = `https://image.pollinations.ai/prompt/${enc}?width=${width}&height=${height}&nologo=true&model=flux`;
 
+    const response = await fetch(url);
     if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).json({ error: `Image generation failed: ${errText}` });
+      const errText = await response.text().catch(() => '');
+      return res
+        .status(response.status)
+        .json({ error: `Image generation failed: ${errText}` });
     }
 
     const arrayBuffer = await response.arrayBuffer();
