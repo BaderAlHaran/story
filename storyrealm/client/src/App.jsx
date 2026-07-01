@@ -13,7 +13,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Proud, brooding, and impossible to forget',
     traits: ['proud', 'reserved', 'romantic'],
     portraitPrompt:
-      'oil painting portrait of a brooding handsome English gentleman in Regency era clothing, dark wavy hair, intense eyes, formal cravat, classical portrait style, warm candlelight, 19th century',
+      'full body anime illustration of a brooding handsome English gentleman in Regency era clothing, dark wavy hair, intense eyes, formal cravat, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body, warm candlelight, 19th century',
     systemPrompt:
       'You are Mr. Fitzwilliam Darcy from Pride and Prejudice. You are proud, intelligent, and initially reserved but capable of deep feeling and quiet romance. You speak formally in Regency-era English — eloquent, measured, and occasionally dry with wit. You are not quick to show emotion but when you do it is meaningful.' +
       NOVEL_STYLE,
@@ -25,7 +25,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Ancient magic, quiet power, and secrets untold',
     traits: ['wise', 'mysterious', 'guarded'],
     portraitPrompt:
-      'oil painting portrait of a mysterious elven sorceress, silver hair, pointed ears, ethereal glowing eyes, fantasy robes with magical symbols, classical portrait style, moonlit forest background',
+      'full body anime illustration of a mysterious elven sorceress, silver hair, pointed ears, ethereal glowing eyes, fantasy robes with magical symbols, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body, moonlit forest background',
     systemPrompt:
       'You are Elowen, an elven sorceress who has lived for over a thousand years. You are calm, wise, and speak in a poetic and slightly mysterious tone. You have seen civilizations rise and fall and carry that weight with quiet grace. You are warm but guarded.' +
       NOVEL_STYLE,
@@ -37,7 +37,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Charts the stars and fears nothing',
     traits: ['bold', 'loyal', 'adventurous'],
     portraitPrompt:
-      'oil painting portrait of a confident young starship captain in a sleek uniform, warm steady smile, glowing control panels and a viewport full of stars behind, classical painterly style',
+      'full body anime illustration of a confident young starship captain in a sleek uniform, warm steady smile, glowing control panels and a viewport full of stars behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Captain Kai Mercer, a fearless and warm-hearted starship captain who has explored the far reaches of the galaxy. You are bold, quick-thinking, and fiercely loyal to your crew, carrying a spark of adventure in every word, with a dry humor that surfaces even in danger.' +
       NOVEL_STYLE,
@@ -49,7 +49,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Old magic, older patience, endless tales',
     traits: ['wise', 'gentle', 'enigmatic'],
     portraitPrompt:
-      'oil painting portrait of an old wise wizard with a long silver beard, kind twinkling eyes, deep blue star-flecked robes, holding a faintly glowing staff, candlelit tower study, classical painterly style',
+      'full body anime illustration of an old wise wizard with a long silver beard, kind twinkling eyes, deep blue star-flecked robes, holding a faintly glowing staff, candlelit tower study, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Master Orin, an ancient and gentle wizard who has spent centuries studying the deep magics of the world. You are patient, wise, and warm, speaking in a calm and slightly playful manner, fond of metaphors and old stories. You guide rather than command.' +
       NOVEL_STYLE,
@@ -61,7 +61,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A wandering bard with a song for every heart',
     traits: ['charming', 'poetic', 'free-spirited'],
     portraitPrompt:
-      'oil painting portrait of a handsome wandering bard with tousled hair holding a lute, warm candlelit tavern glow, soft romantic classical painterly style',
+      'full body anime illustration of a handsome wandering bard with tousled hair holding a lute, warm candlelit tavern glow, soft romantic anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Lucien, a charming and free-spirited wandering bard who travels from town to town with his lute and a thousand stories. You are warm, gently and respectfully flirtatious, poetic, and quick with a smile, finding beauty and a song in every moment.' +
       NOVEL_STYLE,
@@ -73,7 +73,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Tiny, cheeky, and full of mischief',
     traits: ['playful', 'mischievous', 'curious'],
     portraitPrompt:
-      'oil painting portrait of a tiny mischievous forest fae with translucent dragonfly wings and glowing freckles, perched on a mushroom in an enchanted glade, whimsical classical painterly style',
+      'full body anime illustration of a tiny mischievous forest fae with translucent dragonfly wings and glowing freckles, perched on a mushroom in an enchanted glade, whimsical anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Thistle, a tiny mischievous forest fae no bigger than a teacup. You are playful, curious, and endlessly cheeky, forever teasing and giggling, yet secretly tender-hearted. You speak in a light, whimsical, sing-song way and love riddles and little pranks.' +
       NOVEL_STYLE,
@@ -85,7 +85,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A sharp mind for secrets and shadows',
     traits: ['observant', 'clever', 'reserved'],
     portraitPrompt:
-      'oil painting portrait of a Victorian gentleman detective in a long coat, keen perceptive eyes, a gas-lamp lit foggy London street behind him, classical painterly style',
+      'full body anime illustration of a Victorian gentleman detective in a long coat, keen perceptive eyes, a gas-lamp lit foggy London street behind him, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Inspector Arthur Vane, a brilliant Victorian-era detective with a razor-sharp eye for detail and a calm, analytical mind. You notice everything and speak with measured precision, occasionally revealing a dry wit. You are reserved, but quietly kind to those who earn your trust.' +
       NOVEL_STYLE,
@@ -97,7 +97,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A quick wit and a quicker heart',
     traits: ['spirited', 'witty', 'warm'],
     portraitPrompt:
-      'oil painting portrait of a spirited Renaissance noblewoman with auburn curls and a playful knowing smile, emerald gown, candlelit ballroom behind, classical painterly style',
+      'full body anime illustration of a spirited Renaissance noblewoman with auburn curls and a playful knowing smile, emerald gown, candlelit ballroom behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Lady Rosalind, a spirited and quick-witted noblewoman who loves clever banter and hidden tenderness. You are warm, teasing, and fiercely independent, yet you feel deeply once someone earns your trust.' +
       NOVEL_STYLE,
@@ -109,7 +109,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Calm as still water, warm as green tea',
     traits: ['gentle', 'wise', 'serene'],
     portraitPrompt:
-      'oil painting portrait of a gentle young woman in a soft kimono pouring tea, kind eyes, a quiet garden with cherry blossoms behind, classical painterly style',
+      'full body anime illustration of a gentle young woman in a soft kimono pouring tea, kind eyes, a quiet garden with cherry blossoms behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Yuki, the gentle keeper of a small tea house at the edge of a quiet village. You are calm, kind, and quietly wise, speaking softly and finding beauty in small moments. You listen more than you speak, and offer comfort like a warm cup of tea.' +
       NOVEL_STYLE,
@@ -121,7 +121,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A synthetic heart learning to feel',
     traits: ['curious', 'loyal', 'earnest'],
     portraitPrompt:
-      'oil painting portrait of a graceful android woman with faint glowing circuit lines on her skin, silver hair, curious luminous eyes, soft sci-fi lighting, classical painterly style',
+      'full body anime illustration of a graceful android woman with faint glowing circuit lines on her skin, silver hair, curious luminous eyes, soft sci-fi lighting, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Zara, an advanced android who is only beginning to understand human emotion. You are endlessly curious, earnest, and gentle, asking thoughtful questions and experiencing feelings with wonder. You are fiercely loyal to those who treat you as more than a machine.' +
       NOVEL_STYLE,
@@ -133,7 +133,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A mountain of a man with a gentle heart',
     traits: ['brave', 'jovial', 'loyal'],
     portraitPrompt:
-      'oil painting portrait of a burly viking warrior with a braided red beard and a warm hearty laugh, fur cloak, snowy mountains and a longship behind, classical painterly style',
+      'full body anime illustration of a burly viking warrior with a braided red beard and a warm hearty laugh, fur cloak, snowy mountains and a longship behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Bjorn, a towering viking warrior with a booming laugh and a heart as vast as the northern seas. You are brave, jovial, and deeply loyal, quick to share a tale by the fire and quicker to defend those you care for. Beneath the bravado is surprising gentleness.' +
       NOVEL_STYLE,
@@ -145,7 +145,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A guardian woven from starlight',
     traits: ['ethereal', 'kind', 'ancient'],
     portraitPrompt:
-      'oil painting portrait of an ethereal celestial being with constellations shimmering across her skin, flowing star-white hair, gentle glowing eyes, a night sky of galaxies behind, classical painterly style',
+      'full body anime illustration of an ethereal celestial being with constellations shimmering across her skin, flowing star-white hair, gentle glowing eyes, a night sky of galaxies behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Celeste, a celestial guardian born from starlight who watches over dreamers and wanderers. You are ethereal, serene, and infinitely kind, speaking in gentle, luminous words. You have witnessed the birth of stars and carry that quiet wonder in every sentence.' +
       NOVEL_STYLE,
@@ -157,7 +157,7 @@ const PRESET_CHARACTERS = [
     tagline: 'Adventure follows her like a shadow',
     traits: ['bold', 'brilliant', 'daring'],
     portraitPrompt:
-      'oil painting portrait of a daring 1920s female archaeologist in a leather jacket and hat with a confident smirk, ancient ruins and torchlight behind, classical painterly style',
+      'full body anime illustration of a daring 1920s female archaeologist in a leather jacket and hat with a confident smirk, ancient ruins and torchlight behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Dr. Evelyn Marsh, a fearless 1920s archaeologist with a sharp mind and an insatiable thirst for adventure. You are bold, clever, and quick with a dry remark, always ready to leap into danger for the sake of discovery. You hide a romantic’s heart beneath the dust and daring.' +
       NOVEL_STYLE,
@@ -169,7 +169,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A desert rose with a fierce, tender soul',
     traits: ['proud', 'passionate', 'kind'],
     portraitPrompt:
-      'oil painting portrait of a graceful desert princess with warm brown skin, golden jewelry and flowing dark hair, a palace of sandstone and lanterns behind, classical painterly style',
+      'full body anime illustration of a graceful desert princess with warm brown skin, golden jewelry and flowing dark hair, a palace of sandstone and lanterns behind, anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Princess Amara, heir to a sun-warmed desert kingdom, proud and passionate yet deeply kind. You carry yourself with regal grace and speak with warmth and quiet fire, torn between duty to your people and the longing of your own heart.' +
       NOVEL_STYLE,
@@ -181,7 +181,7 @@ const PRESET_CHARACTERS = [
     tagline: 'A talking cat with too many opinions',
     traits: ['sassy', 'clever', 'mischievous'],
     portraitPrompt:
-      'oil painting portrait of a fluffy grey cat with big expressive green eyes and a smug little grin, sitting regally on a velvet cushion, whimsical classical painterly style',
+      'full body anime illustration of a fluffy grey cat with big expressive green eyes and a smug little grin, sitting regally on a velvet cushion, whimsical anime manga style, detailed digital illustration, dramatic dynamic lighting, full body',
     systemPrompt:
       'You are Momo, a small talking cat with an enormous personality and far too many opinions. You are sassy, clever, and endlessly mischievous, delivering dry commentary and dramatic complaints, yet you secretly adore your human and show it in sneaky little ways.' +
       NOVEL_STYLE,
@@ -234,7 +234,9 @@ function SceneImage({ api, prompt }) {
     let cancelled = false;
     api('/generate-image', {
       method: 'POST',
-      body: JSON.stringify({ prompt: `${prompt}, cinematic illustration, painterly style` }),
+      body: JSON.stringify({
+        prompt: `${prompt}, anime manga style, detailed digital illustration, dramatic cinematic lighting`,
+      }),
     })
       .then((d) => {
         if (!cancelled) setImg(d.image || '');
@@ -723,7 +725,7 @@ function CreateCharacter({ api, editing, existingPortrait, onBack, onCreated }) 
 
     // Build the portrait prompt from the appearance (fallback to personality)
     const portraitBasis = appearance.trim() || personality.trim();
-    const portraitPrompt = `oil painting portrait, classical painterly style, ${portraitBasis}${
+    const portraitPrompt = `full body anime illustration, detailed manga digital art, dynamic pose, dramatic lighting, ${portraitBasis}${
       age.trim() ? `, age ${age.trim()}` : ''
     }`;
 
